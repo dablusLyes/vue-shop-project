@@ -5,7 +5,7 @@
       @closeModal="closeModal"
       :item="selectedItem"
     />
-    <div class="discounted">
+    <div v-if="false" class="discounted">
       <v-carousel
         cycle
         height="400"
@@ -50,12 +50,14 @@
           v-model="sort"
           :items="['Trending', 'Lowest price', 'Highest price', 'Discount']"
         ></v-select>
-        <v-btn  @click="itemModal" color="blue"> Add a new product </v-btn>
     </div>
     <div class="item-list">
       <div v-for="item in computedItems" :key="item.id">
         <ProductCard @toggleModal="itemModal" class="item-card" :item="item" />
       </div>
+    </div>
+    <div class="newItemButton">
+      <v-btn color="blue" :large="true" elevation="10" :rounded="true" @click="itemModal"> <v-icon class="plusIcon" color="white">mdi-plus-circle</v-icon> add new item </v-btn>
     </div>
   </div>
 </template>
@@ -185,9 +187,16 @@ export default {
   /* border: 2px solid black; */
 }
 .newItemButton{
-  position:sticky;
-  bottom: 0;
-  left: 0%;
+  position: fixed;
+  right: -140px;
+  bottom: 20px;
+  transition:.4s;
+}
+.newItemButton:hover{
+  transform: translateX(-140px);
+}
+.itemBTN{
+  background-color: blue;
 }
 .item-list {
   display: grid;
@@ -196,7 +205,9 @@ export default {
   grid-column-gap: 15px;
   grid-row-gap: 10px;
 }
-
+.plusIcon{
+  padding-right:20px;
+}
 @media screen and (max-width: 1250px) {
   .item-list {
     display: grid;

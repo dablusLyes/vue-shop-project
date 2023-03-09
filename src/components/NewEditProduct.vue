@@ -1,63 +1,91 @@
 <template>
-  <div  > 
+  <div>
     <div @click="emitCloseModal" class="modal-container"></div>
     <div class="modal">
-      <v-form>
-        <v-container>
-          <v-row>
-              <v-img
-                height="350"
-                width="100"
-                :src="product.thumbnail"
-                cover
-            />
-            <v-col cols="12" md="12">
-
-              <v-file-input label="File input"  variant="underlined" accept="image/png, image/jpeg, image/bmp" @change="imageInput" ></v-file-input>
-            </v-col>
-            <v-col cols="12" md="12">
+      <v-form @submit.prevent validate-on="submit">
+            <v-img
+            v-if="previewThumbnail"
+              class="preview-image"
+              height="350"
+              v-bind:src="previewThumbnail"
+              cover
+            ></v-img>
+            <v-text-field
+              v-model="imageInputText"
+              @change="imageArrayPush"
+              :rules="urlCheck"
+              class="image-input input"
+              label="Image URL"
+              required
+            ></v-text-field>
+            <div class="chips">
+              <div
+                class="chip"
+                v-for="(image, idx) in product.images"
+                :key="image.id"
+              >
+                <v-chip
+                  @click="changePreviewThumbnail(idx)"
+                  class="ma-1"
+                  closable
+                >
+                  image {{ idx + 1 }}
+                  <v-icon @click="îmageArrayPop(idx)">
+                    mdi-close-circle-outline
+                  </v-icon>
+                </v-chip>
+              </div>
+            </div>
+            <div class="inputs">
               <v-text-field
-               v-model="product.title"
+                v-model="product.title"
                 class="name-input input"
                 label="Product name"
+                :rules="inputRules"
                 required
               ></v-text-field>
-            </v-col>
-            <v-col cols="12" md="12">
-              <v-text-field
-              v-model="product.description"
+              <v-textarea
+                v-model="product.description"
+                :rules="inputRules"
+                rows="3"
+                density="compact"
                 class="description-input input"
                 label="Product description"
                 required
-              ></v-text-field>
+              ></v-textarea>
               <v-select
-              label="Category"
-              v-model="product.category"
-              :items="[
-                'smartphones',  
-                'laptops',
-                'home-decoration',
-                'fragrances',
-                'skincare',
-                'groceries',
-              ]"
-            ></v-select>
-            </v-col>
-            <v-col cols="12" md="12">
-              <v-text-field v-model="product.price" type="number" label="Product price"  required></v-text-field>
-            </v-col>       
-            <v-col cols="12" md="12">
-              <v-text-field v-model="product.discountPercentage"  type="number" label="Discount"  required></v-text-field>
-            </v-col>
-            <v-btn
-                color="green"
-                class="mr-4"
-                @click="submit"
-                >
-                submit
-            </v-btn>
-          </v-row>
-        </v-container>
+                class="input category-input"
+                label="Category"
+                v-model="product.category"
+                :items="[
+                  'smartphones',
+                  'laptops',
+                  'home-decoration',
+                  'fragrances',
+                  'skincare',
+                  'groceries',
+                ]"
+              ></v-select>
+              <v-text-field
+                :rules="intRules"
+                class="input price-input"
+                v-model="product.price"
+                type="number"
+                label="Product price"
+                required
+              ></v-text-field>
+              <v-text-field
+                :rules="intRules"
+                class="input discount-input"
+                v-model="product.discountPercentage"
+                type="number"
+                label="Discount"
+                required
+              ></v-text-field>
+            </div>
+              <v-btn block type="submit" class="submitBtn" color="green" @click="submit">
+                {{method}} item
+              </v-btn>
       </v-form>
     </div>
   </div>
@@ -65,87 +93,191 @@
 
 <script>
 export default {
-  props:['item'],
-data(){
-    return{
-      product :{
-        images : []
+  props: ["item"],
+  data() {
+    return {
+      imageInputText: "",
+      product: {
+        images: [],
       },
-      method : ''
-    }
-},
-methods:{
-    submit(){
-      console.log(this.item);
+      method: "",
+      previewThumbnail: "",
+      urlPattern : /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/,
+
+      urlCheck: [
+        (val) => {
+          let arr = this.product.images.map(el => !this.urlPattern.test(el))
+          if(arr.length == 0) return true
+          if(!val) return true
+          return 'These URLs are invalid'
+        },
+      ],
+      inputRules : [
+        (val)=>{
+          if(val) return true
+          return 'Input must be filled'
+        }
+      ],
+      intRules: [
+        val=>{
+          if(!val) return 'Input must be filled'
+          if(val < 0) return 'Value must be positive'
+          return true
+        }
+      ]
+    };
+  },
+  methods: { 
+    submit() {
       let payload = this.product;
-      console.log(payload);
-      console.log(this.method);
-      if(this.method == 'create') this.createItem(payload)
-      if(this.method == 'edit') this.editItem(payload)  
-      this.emitCloseModal();    
+      if(!payload.title) return;
+      if(!payload.description) return;
+      if(payload.images.length == 0) return;
+      if(!payload.price) return;
+      if(!payload.discountPercentage >= 0) payload.discountPercentage =0;
+      if(!payload.thumbnail) payload.thumbnail = payload.images[0]
+
+
+      if (this.method == "create") this.createItem(payload);
+      if (this.method == "edit") this.editItem(payload);
+      this.emitCloseModal();
     },
-    createItem(payload){
-      this.$store.commit('createItem', payload)
-    }, 
-    editItem(payload){
-      this.$store.commit('editItem', payload)
+    createItem(payload) {
+      this.$store.commit("createItem", payload);
     },
-    emitCloseModal(){
-      this.$emit('closeModal')
+    editItem(payload) {
+      this.$store.commit("editItem", payload);
     },
-    imageInput(e){
-      console.log(e);
-      let path ="../src/assets/"
-      this.product.thumbnail = path + e.name
-      this.product.images = [this.product.thumbnail, ...this.product.images]
-      console.log(path);
+    emitCloseModal() {
+      this.$emit("closeModal");
+    },
+    îmageArrayPop(idx) {
+      this.product.images.splice(idx, 1);
+    },
+    imageArrayPush() {
+      let image = this.imageInputText.trim();
+      let resultImages = image.split(' ')
+      let errorImages = resultImages.map(image => {
+        if(this.urlPattern.test(image)){
+          this.product.images.push(image.trim());
+          this.previewThumbnail = image.trim()
+        }else{
+          return image.trim();
+        }
+      })
+      this.imageInputText = errorImages.join(' ');
+    },
+    changePreviewThumbnail(idx) {
+      console.log(this.product.images[idx]);
+      this.previewThumbnail = this.product.images[idx];
+      this.product.thumbnail = this.product.images[idx];
+    },
+  },
+
+
+  mounted() {
+    if (this.item.id) {
+      let obj = JSON.parse(JSON.stringify(this.item));
+      this.product = obj;
+      this.method = "edit";
+      this.previewThumbnail = this.product.thumbnail;
+      console.log(this.previewThumbnail);
+    } else {
+      this.method = "create";
     }
-},
-
-mounted(){
-  if(this.item.id)
-  {
-    let obj = JSON.parse(JSON.stringify(this.item));
-    this.product = obj
-    this.method = 'edit'
-  }else{
-    this.method = 'create'
-  }
-
-}
+  },
 };
 </script>
 
-
 <style scoped>
-.modal-container{
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 31;
-    width: 100%;
-    height: 100vh;
-    background-color: rgba(12,12,12,0.5);
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 31;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(12, 12, 12, 0.5);
+  overflow: hidden;
 }
-.modal{
-    z-index: 33;
-    background-color: white;
-    position: fixed;
-    width : 350px;
-    display: flex;
-    align-items: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 5%;
-    padding: 30px;
+.modal {
+  z-index: 33;
+  background-color: white;
+  position: fixed;
+  width: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-height: 700px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5%;
+  overflow: scroll;
+  overflow-x: hidden;
 }
-.input{
-  width: 90%;
+.inputs {
+  display: flex;
+  justify-content: start;
+  flex-wrap: wrap;
+  padding: 5px 20px;
 }
-.modal-image{
-    width:100%;
-    height: 30vh;
+.input {
+  width: 45%;
+  margin: 0 5px;
+  /* box-sizing: border-box; */
+  /* width: 60%;
+
+  padding: 10px 10px; */
+}
+.image-input {
+  display: block;
+  width: 100%;
+  padding: 5px 20px;
+  margin-top:20px;
+}
+.description-input{
+  width:100%;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  max-width: 95%;
+  margin: 20px 0;
+}
+.chip {
+  box-sizing: border-box;
+}
+.preview-image {
+  /* width: 50%; */
+  height: 100px;
+  border-top-left-radius: 5%;
+  border-top-right-radius: 5%;
+}
+.submitBtn{
+  height: 300px;
 }
 
+@media screen and (max-width: 680px) {
+  .modal {
+    width: 350px;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .preview-image{
+    width:350px
+  }
+  .chips{
+    width:100%;
+  }
+  .chip {
+  width: 30%;
+  margin: 0 5px;
+} 
+  .inputs{
+    margin: 10px 10px
+  }
+}
 </style>
