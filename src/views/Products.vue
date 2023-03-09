@@ -12,7 +12,7 @@
         hide-delimiter-background
         :show-arrows="true"
       >
-        <v-carousel-item v-for="(item, i) in discountedItems" :key="i">
+        <v-carousel-item v-for="(item, i) in discountedItems" :key="i" :src="item.thumbnail">
           <v-sheet  height="100%">
             <div class="d-flex fill-height justify-center align-center">
               <div class="text-h2">{{ item.thumbnail }}</div>
@@ -32,12 +32,12 @@
           hide-details="auto"
         ></v-text-field>
       </div>
-      <div class="input filter-input">
         <v-select
           label="Categories"
           v-model="filter"
           :items="[
-            'smartphones',
+            'All',
+            'Smartphones',
             'laptops',
             'home-decoration',
             'fragrances',
@@ -45,15 +45,12 @@
             'groceries',
           ]"
         ></v-select>
-      </div>
-      <div class="input sort-input">
         <v-select
           label="Sort by:"
           v-model="sort"
           :items="['Trending', 'Lowest price', 'Highest price', 'Discount']"
         ></v-select>
-        <v-btn @click="itemModal" color="blue"> Add a new product </v-btn>
-      </div>
+        <v-btn  @click="itemModal" color="blue"> Add a new product </v-btn>
     </div>
     <div class="item-list">
       <div v-for="item in computedItems" :key="item.id">
@@ -93,9 +90,15 @@ export default {
     },
     filteredItems(items) {
       if (this.filter.length > 0) {
-        return items.filter((item) => item.category === this.filter);
-      } else {
-        return items;
+        let filter = this.filter.toLocaleLowerCase();
+        if(filter == "all")
+        {
+          return items
+        }else{
+          return items.filter((item) => item.category === filter);
+        }
+      }else{
+        return items
       }
     },
 
@@ -132,6 +135,7 @@ export default {
 
     itemModal(payload) {
       this.selectedItem = payload;
+      this.showModal = true;
     },
     closeModal() {
       this.showModal = false;
@@ -170,17 +174,21 @@ export default {
 .filtering {
   width: 100%;
   padding: 50px 30px;
-  display: block;
+  /* display: flex; */
 
   /* align-items: center; */
 }
-.input {
-  /* width: 90%;  */
+.search-input {
+  width: 100%; 
   /* padding: 20px; */
   /* margin: 50px 20px;  */
   /* border: 2px solid black; */
 }
-
+.newItemButton{
+  position:sticky;
+  bottom: 0;
+  left: 0%;
+}
 .item-list {
   display: grid;
   grid-template-columns: repeat(4, 2fr);
