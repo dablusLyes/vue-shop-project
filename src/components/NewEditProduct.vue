@@ -207,7 +207,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  min-height: 450px;
+  max-height: 650px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
