@@ -3,7 +3,7 @@
     <v-card class="card mx-auto" max-width="300" height="600">
       <v-img
         class="align-end item-image text-white"
-        height="350"
+        height="400"
         v-bind:src="item.thumbnail"
         cover
       >
@@ -70,7 +70,13 @@ export default {
 </script>
  
 <style scoped>
+div.v-card__text{
+  padding:0 16px
+}
+div.v-card--title{
+  /* padding:0 16px */
 
+}
 .title{
   font-size: .5em;
 }
@@ -90,7 +96,8 @@ export default {
   color: black;
 }
 .category{
-  color:rgba(3, 3, 78,.8)
+  color:rgba(3, 3, 78,.8);
+  margin : 0px;
 }
 .prices{
   position: absolute;

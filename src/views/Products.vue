@@ -15,7 +15,7 @@
         
     <div id="filterGroup" class="filterGroup" :class="{ filtersActive : showFilters }">
       <button class="filterButton" @click="toggleFilters">
-        <v-icon color="blue" :large="true" class="filterButtonIcon">mdi-filter-menu-outline</v-icon>
+        <v-icon color="blue" :large="false" class="filterButtonIcon">mdi-filter-menu-outline</v-icon>
       </button>
       <div v-if="showFilters" class="filtering">
         <v-select
@@ -182,16 +182,15 @@ export default {
 
 #filterGroup {
   margin: 20px;
-  padding: 5px 10px;
   border-radius: 6px;
-  width : 70px;
-  height: 60px;
+  width : 40px;
+  height: 40px;
   position:relative;
   left: -10px;
   top:-10px;
   transition : .3s;
   background-color: white;
-  border:2px solid #1976D2
+  border:1px solid #3a89d8
 
 
 }
@@ -232,10 +231,12 @@ export default {
 .plusIcon {
   padding-right: 20px;
 }
-@media screen and (max-width: 680px) {
+
+@media screen and (max-width: 1630px) {
   .item-list {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
+
 }
 @media screen and (max-width: 1250px) {
   .item-list {
@@ -245,9 +246,13 @@ export default {
     width: 100%;
   }
 }
-@media screen and (max-width: 1630px) {
+@media screen and (max-width: 680px) {
   .item-list {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(1, 1fr);
+  }
+  #filterGroup.filtersActive {
+    width:100%;
+    height: 100%;
   }
 
 }

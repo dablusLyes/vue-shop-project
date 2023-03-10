@@ -2,14 +2,19 @@
   <div>
     <div @click="emitCloseModal" class="modal-container"></div>
     <div class="modal">
+
       <v-form @submit.prevent validate-on="submit">
             <v-img
             v-if="previewThumbnail"
               class="preview-image"
               height="350"
+              width="560"
               v-bind:src="previewThumbnail"
               cover
-            ></v-img>
+            >
+
+            </v-img>
+
             <v-text-field
               v-model="imageInputText"
               @change="imageArrayPush"
@@ -234,7 +239,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: left;
-  max-width: 95%;
+  width: 100%;
   margin-bottom: 20px ;
 }
 .chip {
@@ -252,6 +257,11 @@ export default {
 .activeChip{
   border:3px solid black
 
+}
+.closeModalBtn{
+  position: relative;
+  bottom: -10px;
+  left: 10px;
 }
 @media screen and (max-width: 680px) {
   .modal {
