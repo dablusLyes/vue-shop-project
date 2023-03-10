@@ -5,33 +5,19 @@
       @closeModal="closeModal"
       :item="selectedItem"
     />
-    <div v-if="false" class="discounted">
-      <v-carousel
-        cycle
-        height="400"
-        hide-delimiter-background
-        :show-arrows="true"
-      >
-        <v-carousel-item v-for="(item, i) in discountedItems" :key="i" :src="item.thumbnail">
-          <v-sheet  height="100%">
-            <div class="d-flex fill-height justify-center align-center">
-              <div class="text-h2">{{ item.thumbnail }}</div>
-            </div>
-          </v-sheet>
-        </v-carousel-item>
-      </v-carousel>
-      <!-- <div v-for="item in discountedItems" :key="item.id">
-        {{ item }}
-      </div> -->
-    </div>
-    <div class="filtering">
-      <div class="input search-input">
-        <v-text-field
-          label="Search..."
-          v-model.trim="search"
-          hide-details="auto"
-        ></v-text-field>
-      </div>
+        <div class="input search-input">
+          <v-text-field
+            label="Search..."
+            v-model.trim="search"
+            hide-details="auto"
+          ></v-text-field>
+        </div>
+        
+    <div id="filterGroup" class="filterGroup" :class="{ filtersActive : showFilters }">
+      <button class="filterButton" @click="toggleFilters">
+        <v-icon color="blue" :large="true" class="filterButtonIcon">mdi-filter-menu-outline</v-icon>
+      </button>
+      <div v-if="showFilters" class="filtering">
         <v-select
           label="Categories"
           v-model="filter"
@@ -50,6 +36,7 @@
           v-model="sort"
           :items="['Trending', 'Lowest price', 'Highest price', 'Discount']"
         ></v-select>
+      </div>
     </div>
     <div class="item-list">
       <div v-for="item in computedItems" :key="item.id">
@@ -57,7 +44,14 @@
       </div>
     </div>
     <div class="newItemButton">
-      <v-btn color="blue" :large="true" elevation="10" :rounded="true" @click="itemModal"> <v-icon class="plusIcon" color="white">mdi-plus-circle</v-icon> add new item </v-btn>
+      <v-btn
+        color="blue"
+        :large="true"
+        elevation="10"
+        :rounded="true"
+        @click="itemModal"
+      >
+        <v-icon class="plusIcon" color="white">mdi-plus-circle</v-icon>add new item</v-btn>
     </div>
   </div>
 </template>
@@ -70,6 +64,7 @@ export default {
   data() {
     return {
       showModal: false,
+      showFilters: false,
       search: "",
       filter: "",
       sort: "id",
@@ -81,6 +76,10 @@ export default {
     this.$store.dispatch("getItems");
   },
   methods: {
+    toggleFilters() {
+      this.showFilters = !this.showFilters;
+      console.log(this.showFilters);
+    },
     searchedItems(items) {
       if (this.search.length > 0) {
         return items.filter((item) =>
@@ -93,14 +92,13 @@ export default {
     filteredItems(items) {
       if (this.filter.length > 0) {
         let filter = this.filter.toLocaleLowerCase();
-        if(filter == "all")
-        {
-          return items
-        }else{
+        if (filter == "all") {
+          return items;
+        } else {
           return items.filter((item) => item.category === filter);
         }
-      }else{
-        return items
+      } else {
+        return items;
       }
     },
 
@@ -172,57 +170,86 @@ export default {
 .app {
   margin-top: 50px;
   padding: 0 40px;
+  background-color: rgb(247, 239, 239);
 }
 .filtering {
   width: 100%;
-  padding: 50px 30px;
+  padding: 10px 30px;
   /* display: flex; */
 
   /* align-items: center; */
 }
-.search-input {
-  width: 100%; 
-  /* padding: 20px; */
-  /* margin: 50px 20px;  */
-  /* border: 2px solid black; */
+
+#filterGroup {
+  margin: 20px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  width : 70px;
+  height: 60px;
+  position:relative;
+  left: -10px;
+  top:-10px;
+  transition : .3s;
+  background-color: white;
+  border:2px solid #1976D2
+
+
 }
-.newItemButton{
+
+#filterGroup.filtersActive {
+  width:60%;
+  height: 100%;
+}
+
+.filterButton{
+  padding : 10px;
+  position: relative;
+  left: 0px;
+
+}
+
+
+.search-input {
+  width: 100%;
+}
+.newItemButton {
   position: fixed;
   right: -140px;
-  bottom: 20px;
-  transition:.4s;
+  bottom: 50px;
+  transition: 0.3s;
 }
-.newItemButton:hover{
+.newItemButton:hover {
   transform: translateX(-140px);
 }
-.itemBTN{
-  background-color: blue;
-}
+
 .item-list {
   display: grid;
-  grid-template-columns: repeat(4, 2fr);
+  grid-template-columns: repeat(5, 2fr);
   grid-template-rows: repeat(4, 1fr);
   grid-column-gap: 15px;
   grid-row-gap: 10px;
 }
-.plusIcon{
-  padding-right:20px;
+.plusIcon {
+  padding-right: 20px;
+}
+@media screen and (max-width: 680px) {
+  .item-list {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 @media screen and (max-width: 1250px) {
   .item-list {
-    display: grid;
     grid-template-columns: repeat(2, 1fr);
   }
-
   .filtering {
     width: 100%;
   }
 }
-
-@media screen and (max-width: 680px) {
+@media screen and (max-width: 1630px) {
   .item-list {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
+
 }
+
 </style>

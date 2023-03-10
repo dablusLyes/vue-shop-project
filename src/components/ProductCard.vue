@@ -7,18 +7,18 @@
         v-bind:src="item.thumbnail"
         cover
       >
-      <div class="discount">{{ Math.floor(item.discountPercentage) }} %</div>
+      <div class="discount">-{{ Math.floor(item.discountPercentage) }} %</div>
+      <v-card-title class=" white"> <p class="title">{{ item.title }}</p> </v-card-title>
       </v-img>
-      <v-card-title class="white"> {{ item.title }} </v-card-title>
+        <v-card-text>
+          <p class="category" >{{ item.category }}</p>
+        </v-card-text>
 
         <v-card-subtitle class="description-container pt-4">
           <p>{{ item.description }}</p>
         </v-card-subtitle>
-        <v-card-text>
-          <p>{{ item.category }}</p>
-        </v-card-text>
         <v-card-text class="prices">
-          <p class="discountedPrice">{{ discountedPrice }}.- </p>
+          <p :class="{redPrice : redPrice}" class="discountedPrice">{{ discountedPrice }}.- </p>
           <p v-if="showDiscountValue" class="originalPrice">{{item.price}}.-</p>
         </v-card-text>
         <div class="actions">
@@ -37,21 +37,30 @@ export default {
     return {
       showDiscountValue:false,
       discountedPrice:'',
-      hoveredCard : false
+      hoveredCard : false,
+      redPrice : false,
+      trimmedDescription: ''
     }
   },
   methods: {
     deleteItem(){
         this.$store.commit('deleteItem', this.item.id)
     },
-    hoverCard(){
-      console.log(this.item.id);
-    },
     editItem(){
       this.$emit('toggleModal',this.item)
     }
   },
   mounted(){
+    if(this.item.description)
+    {
+      if(this.item.description.length > 70)
+      {
+        this.trimmedDescription = this.item.description.slice(0,70) + '...'
+      }
+    }
+    if(this.item.discountPercentage >15){
+      this.redPrice = true
+    }
     if(this.item.discountPercentage > 10)
       this.showDiscountValue=true;
       this.discountedPrice  = Math.floor(this.item.price - (this.item.price * (this.item.discountPercentage/100)))
@@ -61,16 +70,31 @@ export default {
 </script>
  
 <style scoped>
+
+.title{
+  font-size: .5em;
+}
 .description-container{
   height: 100px;
 }
 .deleteIcon:hover{
-  color: red;
+  color: #850101
+;
 }
+.redPrice{
+  color: #a82828
+;
+}
+
 .editIcon:hover{
-  color: green;
+  color: black;
+}
+.category{
+  color:rgba(3, 3, 78,.8)
 }
 .prices{
+  position: absolute;
+  bottom: 0px;
   display: flex;
   padding: 0 5px;
 }
@@ -83,10 +107,10 @@ export default {
   text-decoration-color: red;
 }
 .discount {
-  background-color: red;
+  background-color: #a32e2e;
   color: white;
   font-weight: bold;
-  width: 40px;
+  width: 50px;
   text-align: center;
   top: -5px;
   left: -10px;
@@ -110,6 +134,10 @@ export default {
 
 }
 
-
+@media screen and (max-width: 680px) {
+  .actions{
+    opacity: 1;
+  }
+}
 
 </style>

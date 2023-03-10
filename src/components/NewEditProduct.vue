@@ -26,11 +26,11 @@
               >
                 <v-chip
                   @click="changePreviewThumbnail(idx)"
-                  class="ma-1"
+                  class="ma-1 chiplet"
                   closable
                 >
                   image {{ idx + 1 }}
-                  <v-icon @click="îmageArrayPop(idx)">
+                  <v-icon @click="imageArrayPop(idx)">
                     mdi-close-circle-outline
                   </v-icon>
                 </v-chip>
@@ -75,7 +75,6 @@
                 required
               ></v-text-field>
               <v-text-field
-                :rules="intRules"
                 class="input discount-input"
                 v-model="product.discountPercentage"
                 type="number"
@@ -103,13 +102,11 @@ export default {
       method: "",
       previewThumbnail: "",
       urlPattern : /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/,
-
       urlCheck: [
         (val) => {
-          let arr = this.product.images.map(el => !this.urlPattern.test(el))
-          if(arr.length == 0) return true
-          if(!val) return true
-          return 'These URLs are invalid'
+          if(val.length == 0) return true
+          if(this.urlPattern.test(val)) return true
+          return 'Invalid URL'
         },
       ],
       inputRules : [
@@ -134,7 +131,7 @@ export default {
       if(!payload.description) return;
       if(payload.images.length == 0) return;
       if(!payload.price) return;
-      if(!payload.discountPercentage >= 0) payload.discountPercentage =0;
+      if(!(payload.discountPercentage >= 0)) payload.discountPercentage =0;
       if(!payload.thumbnail) payload.thumbnail = payload.images[0]
 
 
@@ -151,7 +148,7 @@ export default {
     emitCloseModal() {
       this.$emit("closeModal");
     },
-    îmageArrayPop(idx) {
+    imageArrayPop(idx) {
       this.product.images.splice(idx, 1);
     },
     imageArrayPush() {
@@ -168,7 +165,6 @@ export default {
       this.imageInputText = errorImages.join(' ');
     },
     changePreviewThumbnail(idx) {
-      console.log(this.product.images[idx]);
       this.previewThumbnail = this.product.images[idx];
       this.product.thumbnail = this.product.images[idx];
     },
@@ -181,7 +177,6 @@ export default {
       this.product = obj;
       this.method = "edit";
       this.previewThumbnail = this.product.thumbnail;
-      console.log(this.previewThumbnail);
     } else {
       this.method = "create";
     }
@@ -198,22 +193,21 @@ export default {
   width: 100%;
   height: 100vh;
   background-color: rgba(12, 12, 12, 0.5);
-  overflow: hidden;
 }
 .modal {
   z-index: 33;
   background-color: white;
   position: fixed;
-  width: 550px;
+  width: 560px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  max-height: 700px;
+  min-height: 450px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 5%;
-  overflow: scroll;
+  overflow: auto;
   overflow-x: hidden;
 }
 .inputs {
@@ -225,10 +219,6 @@ export default {
 .input {
   width: 45%;
   margin: 0 5px;
-  /* box-sizing: border-box; */
-  /* width: 60%;
-
-  padding: 10px 10px; */
 }
 .image-input {
   display: block;
@@ -240,11 +230,12 @@ export default {
   width:100%;
 }
 .chips {
+  padding: 0 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: left;
   max-width: 95%;
-  margin: 20px 0;
+  margin-bottom: 20px ;
 }
 .chip {
   box-sizing: border-box;
@@ -258,7 +249,10 @@ export default {
 .submitBtn{
   height: 300px;
 }
+.activeChip{
+  border:3px solid black
 
+}
 @media screen and (max-width: 680px) {
   .modal {
     width: 350px;

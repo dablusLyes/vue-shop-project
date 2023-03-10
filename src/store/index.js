@@ -31,7 +31,8 @@ export default new Vuex.Store({
 			console.log(state);
 		},
 		editItem(state, payload) {
-			// REALLY not proud of that piece of code, but didn't find another way of doing it properly
+			// REALLY not proud of that piece of code, but couldn't find another way of doing it properly
+
 			state.listItems = state.listItems.filter(
 				(el) => el.id !== payload.id,
 			);
