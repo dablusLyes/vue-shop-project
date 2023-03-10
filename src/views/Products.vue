@@ -167,10 +167,12 @@ export default {
 </script>
 
 <style>
+#root{
+  
+  }
 .app {
-  margin-top: 50px;
-  padding: 0 40px;
   background-color: rgb(247, 239, 239);
+  padding: 0 40px;
 }
 .filtering {
   width: 100%;
