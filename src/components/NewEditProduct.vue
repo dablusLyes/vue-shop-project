@@ -8,7 +8,6 @@
             v-if="previewThumbnail"
               class="preview-image"
               height="350"
-              width="560"
               v-bind:src="previewThumbnail"
               cover
             >
