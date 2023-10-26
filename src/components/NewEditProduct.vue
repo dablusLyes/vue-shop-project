@@ -8,11 +8,7 @@
             v-if="previewThumbnail"
               class="preview-image"
               height="350"
-<<<<<<< HEAD
-              v-bind:src="previewThumbnail"
-=======
                 v-bind:src="previewThumbnail"
->>>>>>> 6afccc018029ef274ddc92cf9de944e9ea6d8ced
               cover
             >
 
