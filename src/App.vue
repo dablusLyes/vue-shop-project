@@ -1,6 +1,6 @@
 <template>
   <v-app>
-<Sidebar/>
+<Header/>
     <v-main>
       <router-view />
     </v-main>
@@ -8,13 +8,13 @@
 </template>
 
 <script>
-import Sidebar from "@/components/Sidebar"
+import Header from "@/components/Header"
 
 export default {
   name: "App",
-components: {Sidebar},
+components: {Header},
   data: () => ({
-    sidebar: false,
+    Header: false,
   }),
 };
 </script>
