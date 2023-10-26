@@ -8,7 +8,11 @@
             v-if="previewThumbnail"
               class="preview-image"
               height="350"
+<<<<<<< HEAD
               v-bind:src="previewThumbnail"
+=======
+                v-bind:src="previewThumbnail"
+>>>>>>> 6afccc018029ef274ddc92cf9de944e9ea6d8ced
               cover
             >
 
@@ -206,7 +210,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  min-height: 450px;
+  max-height: 650px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

@@ -1,6 +1,3 @@
-# test-template
-Simplified front end stack
-
 ## Project setup
 ```
 npm install
