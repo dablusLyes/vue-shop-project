@@ -22,6 +22,11 @@ export default {
 </script>
 
 <style scoped>
+
+  header{
+    margin-bottom: 30px;
+    box-shadow: 0 0 15 20px black;
+  }
   .branding{
     display: flex;
     justify-content: center;
